@@ -1,0 +1,73 @@
+<!-- Front-end code with AJAX integration -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatBot Widget</title>
+    <!-- Add your CSS styles here -->
+</head>
+<body>
+    <div class="chat-widget">
+        <div class="chat-area" id="chatArea">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div class="input-area">
+            <input type="text" class="input-box" id="userInput" placeholder="Type a message..." onkeydown="handleKeyPress(event)">
+            <button class="send-button" onclick="sendMessage()">Send</button>
+            <button class="voice-button" onclick="startListening()">Voice</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById("userInput").value;
+            appendUserMessage(userInput);
+
+            // Make an AJAX request to the server-side script
+            fetch("/chatbot", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ user_input: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = data.bot_response;
+                var botName = data.bot_name;
+                appendBotMessage(botResponse, botName);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+
+            document.getElementById("userInput").value = "";
+        }
+
+        function appendUserMessage(message) {
+            // Append user message to the chat area
+            // You can customize the message format as needed
+            var userMessage = document.createElement("p");
+            userMessage.textContent = "You: " + message;
+            document.getElementById("chatArea").appendChild(userMessage);
+        }
+
+        function appendBotMessage(message, botName) {
+            // Append bot message to the chat area
+            // You can customize the message format as needed
+            var botMessage = document.createElement("p");
+            botMessage.textContent = botName + ": " + message;
+            document.getElementById("chatArea").appendChild(botMessage);
+        }
+
+        function handleKeyPress(event) {
+            if (event.keyCode === 13) {
+                sendMessage();
+            }
+        }
+
+        function startListening() {
+            // Implement voice command functionality if needed
+        }
+    </script>
+</body>
+</html>
